@@ -28,4 +28,9 @@ public class Vote {
     @ManyToOne
     private Post post;
 
+    public Vote(boolean like, User user, Post post) {
+        this.like = like;
+        this.user = user;
+        this.post = post;
+    }
 }

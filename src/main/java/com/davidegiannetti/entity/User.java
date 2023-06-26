@@ -10,7 +10,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -38,11 +37,20 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     @OneToMany(mappedBy = "user")
-    private List<Vote> voteList;
+    private Set<Vote> voteList;
     @CreatedDate
     @Column(nullable = false)
     private LocalDate creationDate;
     @LastModifiedDate
     private LocalDateTime lastAccess;
+
+    public User(String firstName, String lastName, String username, String email, String password, Set<Role> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 
 }
