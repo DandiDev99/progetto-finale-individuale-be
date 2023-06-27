@@ -24,15 +24,22 @@ public class Post {
     private String body;
     @Column(nullable = false)
     @ManyToOne
+    private User author;
+    @Column(nullable = false)
+    @ManyToOne
     private Category category;
     @ManyToMany
     private Set<Tag> tags;
     @OneToMany(mappedBy = "post")
     private Set<Vote> votes;
+    @ManyToOne
+    private State state;
 
-    public Post(String title, String body, Category category) {
+    public Post(String title, String body, User author, Category category) {
         this.title = title;
         this.body = body;
+        this.author = author;
         this.category = category;
     }
+
 }

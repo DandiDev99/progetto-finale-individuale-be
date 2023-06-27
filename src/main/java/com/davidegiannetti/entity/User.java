@@ -38,6 +38,8 @@ public class User {
     private Set<Role> roles;
     @OneToMany(mappedBy = "user")
     private Set<Vote> voteList;
+    @OneToMany(mappedBy = "author")
+    private Set<Post> posts;
     @CreatedDate
     @Column(nullable = false)
     private LocalDate creationDate;

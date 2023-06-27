@@ -72,7 +72,6 @@ public class ApplicationConfig {
         return httpSecurity.build();
     }
 
-
     @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
