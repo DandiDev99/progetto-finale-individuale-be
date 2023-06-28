@@ -1,6 +1,6 @@
 package com.davidegiannetti.dto.user;
-import com.davidegiannetti.entity.Role;
-import com.davidegiannetti.entity.Vote;
+import com.davidegiannetti.dto.role.OutputRoleDto;
+import com.davidegiannetti.dto.vote.OutputVoteDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +21,8 @@ public class UserOutputDto {
     private String lastName;
     private String username;
     private String email;
-    private Set<Role> roles;
-    private Set<Vote> votes;
+    private Set<OutputRoleDto> roles;
+    private Set<OutputVoteDto> votes;
     private LocalDate creationDate;
     private LocalDateTime lastAccess;
 

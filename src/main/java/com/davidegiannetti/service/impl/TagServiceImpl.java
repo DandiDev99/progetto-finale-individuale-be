@@ -30,12 +30,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Set<OutputTagDto> getFromIdPost(Long idPost) {
-        Post post = postRepository.findById(idPost).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trovato."));
-        return tagRepository.findAllByPost(post).stream().map(tag -> modelMapper.map(tag, OutputTagDto.class)).collect(Collectors.toSet());
-    }
-
-    @Override
     public void delete(Long id) {
         tagRepository.delete(tagRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag non trovato.")));
     }

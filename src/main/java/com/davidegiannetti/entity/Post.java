@@ -22,10 +22,10 @@ public class Post {
     private String title;
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String body;
-    @Column(nullable = false)
-    @ManyToOne
+    @ManyToOne()
+    @JoinColumn(nullable = false)
     private User author;
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     @ManyToOne
     private Category category;
     @ManyToMany

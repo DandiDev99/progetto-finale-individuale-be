@@ -22,11 +22,6 @@ public class TagController {
         return new ResponseEntity<>(tagService.create(inputTagDto), HttpStatus.OK);
     }
 
-    @GetMapping("/{idPost}")
-    public  ResponseEntity<Set<OutputTagDto>> getFromIdPost(@PathVariable Long idPost){
-        return new ResponseEntity<>(tagService.getFromIdPost(idPost), HttpStatus.OK);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         tagService.delete(id);

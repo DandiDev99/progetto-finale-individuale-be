@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "UniqueUserAndPost", columnNames = {"userId","postId"})
+        @UniqueConstraint(name = "UniqueUserAndPost", columnNames = {"user_id","post_id"})
 })
 public class Vote {
 
@@ -20,17 +20,18 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private boolean like;
-    @Column(name = "userId")
+    private boolean liked;
+    @JoinColumn(name = "user_id")
     @ManyToOne
     private User user;
-    @Column(name = "postId")
+    @JoinColumn(name = "post_id")
     @ManyToOne
     private Post post;
 
-    public Vote(boolean like, User user, Post post) {
-        this.like = like;
+    public Vote(boolean liked, User user, Post post) {
+        this.liked = liked;
         this.user = user;
         this.post = post;
     }
+
 }

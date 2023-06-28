@@ -22,11 +22,6 @@ public class VoteController {
         return new ResponseEntity<>(voteService.vote(inputVoteDto), HttpStatus.OK);
     }
 
-    @GetMapping("/{idPost}")
-    public ResponseEntity<Set<OutputVoteDto>> getAllFormPostId(@PathVariable Long idPost){
-        return new ResponseEntity<>(voteService.findAllFromPost(idPost), HttpStatus.OK);
-    }
-
     @DeleteMapping("/{idPost}")
     public ResponseEntity<Void> delete(@PathVariable Long idPost){
         //TODO

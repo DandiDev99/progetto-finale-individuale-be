@@ -8,7 +8,6 @@ import java.util.Set;
 public interface TagService {
 
     OutputTagDto create(InputTagDto inputTagDto);
-    Set<OutputTagDto> getFromIdPost(Long idPost);
     void delete(Long id);
 
 }

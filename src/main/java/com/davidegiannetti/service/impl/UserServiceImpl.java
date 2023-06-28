@@ -32,6 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserOutputDto registration(RegistrationUserDto registrationUserDto) {
+        userRepository.findByUsername(registrationUserDto.getUsername()).ifPresent(user -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username già utilizzato.");
+        });
+        userRepository.findByEmail(registrationUserDto.getEmail()).ifPresent(user -> {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email già utilizzata.");
+        });
         User user = modelMapper.map(registrationUserDto, User.class);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));

@@ -11,5 +11,5 @@ import java.util.Set;
 public interface VoteRepository extends JpaRepository<Vote,Long> {
 
     Optional<Vote> findByUserAndPost(User user, Post post);
-    Set<Vote> findByPost(Post post);
+
 }

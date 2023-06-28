@@ -15,9 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class VoteServiceImpl implements VoteService {
@@ -33,19 +30,13 @@ public class VoteServiceImpl implements VoteService {
         Post post = postRepository.findById(inputVoteDto.getIdPost()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trovato."));
         Vote finalVote = new Vote(inputVoteDto.isLike(), user, post);
         voteRepository.findByUserAndPost(user, post).ifPresent((vote) -> {
-            if(vote.isLike() == finalVote.isLike()){
+            if(vote.isLiked() == finalVote.isLiked()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hai già dato questo voto al post.");
             }else{
-                finalVote.setLike(!finalVote.isLike());
+                finalVote.setLiked(!finalVote.isLiked());
             }
         });
         return modelMapper.map(voteRepository.save(finalVote), OutputVoteDto.class);
-    }
-
-    @Override
-    public Set<OutputVoteDto> findAllFromPost(Long idPost) {
-        return voteRepository.findByPost(postRepository.findById(idPost).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trovato."))).stream()
-                .map(vote -> modelMapper.map(vote, OutputVoteDto.class)).collect(Collectors.toSet());
     }
 
     @Override
