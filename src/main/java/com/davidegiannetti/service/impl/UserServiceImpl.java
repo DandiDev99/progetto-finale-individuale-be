@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,10 @@ public class UserServiceImpl implements UserService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setActive(true);
+        //TODO : settare il ruolo user
+        //user.setRoles(Set.of());
+        //pezza perche non funziona il prepersist
+        user.setCreationDate(LocalDate.now());
         return modelMapper.map(userRepository.save(user), UserOutputDto.class);
     }
 
@@ -69,8 +74,7 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accesso negato: utente non attivo");
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String cryptedPassword = bCryptPasswordEncoder.encode(loginUserDto.getPassword());
-        if (!bCryptPasswordEncoder.matches(user.getPassword(), cryptedPassword)) {
+        if (!bCryptPasswordEncoder.matches(loginUserDto.getPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password inserita non è valida");
         }
         user.setLastAccess(LocalDateTime.now());
