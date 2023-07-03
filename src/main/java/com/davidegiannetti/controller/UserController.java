@@ -24,6 +24,8 @@ public class UserController {
         return new ResponseEntity<>(userService.registration(registrationUserDto), HttpStatus.CREATED);
     }
 
+
+
     @GetMapping("/all")
     public ResponseEntity<Set<UserOutputDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);

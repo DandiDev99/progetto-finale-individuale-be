@@ -4,7 +4,9 @@ import com.davidegiannetti.dto.user.AuthenticationDto;
 import com.davidegiannetti.dto.user.LoginUserDto;
 import com.davidegiannetti.dto.user.RegistrationUserDto;
 import com.davidegiannetti.dto.user.UserOutputDto;
+import com.davidegiannetti.entity.Role;
 import com.davidegiannetti.entity.User;
+import com.davidegiannetti.repository.RoleRepository;
 import com.davidegiannetti.repository.UserRepository;
 import com.davidegiannetti.service.UserService;
 import com.davidegiannetti.util.JWTUtil;
@@ -19,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final JWTUtil jwtUtil;
@@ -41,10 +45,9 @@ public class UserServiceImpl implements UserService {
         });
         User user = modelMapper.map(registrationUserDto, User.class);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassword(bCryptPasswordEncoder.encode(generaPassword()));
         user.setActive(true);
-        //TODO : settare il ruolo user
-        //user.setRoles(Set.of());
+        user.setRoles(Set.of(roleRepository.findByAuthority("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")))));
         //pezza perche non funziona il prepersist
         user.setCreationDate(LocalDate.now());
         return modelMapper.map(userRepository.save(user), UserOutputDto.class);
@@ -86,6 +89,19 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore lato server");
         }
+    }
+
+    private String generaPassword(){
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 12; i++) {
+            char[] choices = new char[3];
+            choices[0] = (char)random.nextInt('a','z');
+            choices[1] = (char)random.nextInt('A','Z');
+            choices[2] = (char)random.nextInt('0','9');
+            sb.append(choices[random.nextInt(3)]);
+        }
+        return sb.toString();
     }
 
 }
