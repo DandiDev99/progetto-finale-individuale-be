@@ -28,4 +28,9 @@ public class StateServiceImpl implements StateService {
         stateRepository.delete(stateRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessuno stato con questo id.")));
     }
 
+    @Override
+    public OutputStateDto byState(String state) {
+        return modelMapper.map(stateRepository.findByState(state).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "stato non trovato")), OutputStateDto.class);
+    }
+
 }

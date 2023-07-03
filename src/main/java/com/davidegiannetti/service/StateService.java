@@ -7,5 +7,6 @@ public interface StateService {
 
     OutputStateDto create(InputStateDto inputStateDto);
     void delete(Long id);
+    OutputStateDto byState(String state);
 
 }

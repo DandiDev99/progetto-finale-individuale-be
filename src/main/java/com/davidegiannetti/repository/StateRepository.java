@@ -3,4 +3,10 @@ package com.davidegiannetti.repository;
 import com.davidegiannetti.entity.State;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface StateRepository extends JpaRepository<State, Long> {}
+import java.util.Optional;
+
+public interface StateRepository extends JpaRepository<State, Long> {
+
+    Optional<State> findByState(String state);
+
+}
