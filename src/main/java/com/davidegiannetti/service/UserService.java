@@ -14,5 +14,6 @@ public interface UserService {
     UserOutputDto update (RegistrationUserDto userDto, Long id);
     void delete(Long id);
     AuthenticationDto login (LoginUserDto loginUserDto);
+    void promoteStaff(Long id);
 
 }

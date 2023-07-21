@@ -32,7 +32,7 @@ public class PostController {
         return new ResponseEntity<>(postService.byId(id), HttpStatus.OK);
     }
 
-    @GetMapping("/{title}")
+    @GetMapping("/title/{title}")
     public ResponseEntity<List<OutputPostDto>> findByTitle(@PathVariable String title){
         return new ResponseEntity<>(postService.byTitle(title), HttpStatus.OK);
     }

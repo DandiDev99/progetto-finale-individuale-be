@@ -15,7 +15,7 @@ import java.util.Set;
 @RequestMapping("/vote")
 public class VoteController {
 
-    private VoteService voteService;
+    private final VoteService voteService;
 
     @PostMapping
     public ResponseEntity<OutputVoteDto> vote(@RequestBody InputVoteDto inputVoteDto){
@@ -24,8 +24,8 @@ public class VoteController {
 
     @DeleteMapping("/{idPost}")
     public ResponseEntity<Void> delete(@PathVariable Long idPost){
-        //TODO
-        return null;
+        voteService.delete(idPost);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

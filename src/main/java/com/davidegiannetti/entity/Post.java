@@ -25,6 +25,8 @@ public class Post {
     @ManyToOne()
     @JoinColumn(nullable = false)
     private User author;
+    @ManyToOne()
+    private User staffApprover;
     @JoinColumn(nullable = false)
     @ManyToOne
     private Category category;
@@ -34,6 +36,8 @@ public class Post {
     private Set<Vote> votes;
     @ManyToOne
     private State state;
+    @OneToMany(mappedBy = "post")
+    private Set<Comment> comments;
 
     public Post(String title, String body, User author, Category category) {
         this.title = title;

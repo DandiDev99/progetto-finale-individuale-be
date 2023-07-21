@@ -38,7 +38,7 @@ public class JWTUtil {
     }
 
     public DecodedJWT decode(String jwt) {
-        return JWT.require(Algorithm.HMAC512(key)).withIssuer(issuer).build().verify(jwt);
+        return JWT.require(Algorithm.HMAC256(key)).withIssuer(issuer).build().verify(jwt);
     }
 
 }

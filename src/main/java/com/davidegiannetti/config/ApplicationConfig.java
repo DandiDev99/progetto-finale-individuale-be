@@ -54,7 +54,8 @@ public class ApplicationConfig {
                         DecodedJWT decodedJWT = jwtUtil.decode(jwt);
                         Claim userClaim = decodedJWT.getClaim("user");
                         User user = objectMapper.readValue(userClaim.asString(), User.class);
-                        userRepository.findById(user.getId()).ifPresent(u->{
+                        userRepository.findById(user.getId()).ifPresent(u ->{
+                            System.out.println(u);
                             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(u.getEmail(), null, u.getRoles()));
                         });
                     }catch (TokenExpiredException e){

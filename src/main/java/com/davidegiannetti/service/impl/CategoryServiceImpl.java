@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -26,6 +28,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void delete(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OutputCategoryDto> all() {
+        return categoryRepository.findAll().stream().map(category -> modelmapper.map(category, OutputCategoryDto.class)).toList();
     }
 
 }

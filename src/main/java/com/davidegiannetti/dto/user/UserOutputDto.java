@@ -25,5 +25,7 @@ public class UserOutputDto {
     private Set<OutputVoteDto> votes;
     private LocalDate creationDate;
     private LocalDateTime lastAccess;
+    private boolean active;
+    private boolean deleted;
 
 }

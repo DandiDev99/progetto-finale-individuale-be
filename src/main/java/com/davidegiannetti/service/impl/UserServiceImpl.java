@@ -8,6 +8,8 @@ import com.davidegiannetti.entity.Role;
 import com.davidegiannetti.entity.User;
 import com.davidegiannetti.repository.RoleRepository;
 import com.davidegiannetti.repository.UserRepository;
+import com.davidegiannetti.repository.ValidatorRepository;
+import com.davidegiannetti.service.EmailService;
 import com.davidegiannetti.service.UserService;
 import com.davidegiannetti.util.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,27 +32,38 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    private final ValidatorRepository validatorRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
     private final JWTUtil jwtUtil;
+    private final EmailService emailService;
 
     @Override
     public UserOutputDto registration(RegistrationUserDto registrationUserDto) {
+        //controlli preliminari
         userRepository.findByUsername(registrationUserDto.getUsername()).ifPresent(user -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "username già utilizzato.");
         });
         userRepository.findByEmail(registrationUserDto.getEmail()).ifPresent(user -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email già utilizzata.");
         });
+        //validazione dinamica
+//        Validator v = validatorRepository.findByFieldName("password").orElseThrow(()->new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore Lato Server"));
+        //TODO: controllare i campi
+//        if(v.getMin()!=null && title<v.getMin() ){
+//
+//        }
+        //altro
         User user = modelMapper.map(registrationUserDto, User.class);
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(bCryptPasswordEncoder.encode(generaPassword()));
+        String password = generaPassword();
+        user.setPassword(bCryptPasswordEncoder.encode(password));
         user.setActive(true);
         user.setRoles(Set.of(roleRepository.findByAuthority("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")))));
-        //pezza perche non funziona il prepersist
-        user.setCreationDate(LocalDate.now());
-        return modelMapper.map(userRepository.save(user), UserOutputDto.class);
+        UserOutputDto saved = modelMapper.map(userRepository.save(user), UserOutputDto.class);
+        emailService.sendConfirmationEmail(saved.getEmail(), password);
+        return saved;
     }
 
     @Override
@@ -74,7 +87,10 @@ public class UserServiceImpl implements UserService {
     public AuthenticationDto login(LoginUserDto loginUserDto) {
         User user = userRepository.findByUsername(loginUserDto.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nessun utente con questo username."));
         if (!user.isActive()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accesso negato: utente non attivo");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accesso negato: utente non attivo, per maggiori informazioni contattare l'assistenza.");
+        }
+        if(user.isDeleted()){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Accesso negato: questo account e' stato cancellato, non potrai mai piu accedervi.");
         }
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         if (!bCryptPasswordEncoder.matches(loginUserDto.getPassword(), user.getPassword())) {
@@ -102,6 +118,15 @@ public class UserServiceImpl implements UserService {
             sb.append(choices[random.nextInt(3)]);
         }
         return sb.toString();
+    }
+
+    @Override
+    public void promoteStaff(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Impossibile trovare l'utente da promuovere."));
+        Set<Role> newRoles = user.getRoles();
+        newRoles.add(roleRepository.findByAuthority("ROLE_STAFF").orElseGet(() -> roleRepository.save(new Role("ROLE_STAFF"))));
+        user.setRoles(newRoles);
+        userRepository.save(user);
     }
 
 }

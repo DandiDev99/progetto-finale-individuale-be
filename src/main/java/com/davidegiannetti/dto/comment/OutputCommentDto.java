@@ -1,4 +1,4 @@
-package com.davidegiannetti.dto.vote;
+package com.davidegiannetti.dto.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class OutputVoteDto {
+public class OutputCommentDto {
 
-    private boolean liked;
+    private Long id;
+    private String content;
 
 }

@@ -1,5 +1,6 @@
 package com.davidegiannetti.entity;
 
+import com.davidegiannetti.audit.UserAuditListner;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@EntityListeners(value = {UserAuditListner.class})
 public class User {
 
     @Id
@@ -34,12 +36,18 @@ public class User {
     private String password;
     @Column(nullable = false)
     private boolean active;
+    @Column(nullable = false)
+    private boolean deleted;
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     @OneToMany(mappedBy = "user")
     private Set<Vote> voteList;
     @OneToMany(mappedBy = "author")
     private Set<Post> posts;
+    @OneToMany(mappedBy = "staffApprover")
+    private Set<Post> postApproved;
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> comments;
     @CreatedDate
     @Column(nullable = false)
     private LocalDate creationDate;

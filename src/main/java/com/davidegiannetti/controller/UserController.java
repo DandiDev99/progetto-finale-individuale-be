@@ -24,8 +24,6 @@ public class UserController {
         return new ResponseEntity<>(userService.registration(registrationUserDto), HttpStatus.CREATED);
     }
 
-
-
     @GetMapping("/all")
     public ResponseEntity<Set<UserOutputDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
@@ -45,6 +43,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationDto> login(@RequestBody LoginUserDto loginUserDto){
         return new ResponseEntity<>(userService.login(loginUserDto), HttpStatus.OK);
+    }
+
+    @PostMapping("/promote/{id}")
+    public ResponseEntity<Void> promoteStaff(@PathVariable Long id){
+        userService.promoteStaff(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
