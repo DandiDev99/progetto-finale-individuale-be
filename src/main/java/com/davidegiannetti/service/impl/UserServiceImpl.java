@@ -80,7 +80,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        userRepository.deleteById(id);
+        userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato.")).setDeleted(true);
+    }
+
+    @Override
+    public void ban(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+        user.setActive(false);
+        userRepository.save(user);
     }
 
     @Override
@@ -127,6 +134,13 @@ public class UserServiceImpl implements UserService {
         newRoles.add(roleRepository.findByAuthority("ROLE_STAFF").orElseGet(() -> roleRepository.save(new Role("ROLE_STAFF"))));
         user.setRoles(newRoles);
         userRepository.save(user);
+    }
+
+    @Override
+    public void unban(Long id) {
+       User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+       user.setActive(true);
+       userRepository.save(user);
     }
 
 }

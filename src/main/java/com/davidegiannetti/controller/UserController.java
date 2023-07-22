@@ -34,6 +34,17 @@ public class UserController {
         return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
     }
 
+    @PutMapping("/ban/{id}")
+    public ResponseEntity<Void> ban(@PathVariable Long id){
+        userService.ban(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PutMapping("/unban/{id}")
+    public ResponseEntity<Void> unban(@PathVariable Long id){
+        userService.unban(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
         userService.delete(id);
