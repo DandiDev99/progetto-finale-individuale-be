@@ -22,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -67,8 +68,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<UserOutputDto> getAll() {
-        return userRepository.findAll().stream().map(user -> modelMapper.map(user, UserOutputDto.class)).collect(Collectors.toSet());
+    public List<UserOutputDto> getAll() {
+        return userRepository.findByDeleted(false).stream().map(user -> modelMapper.map(user, UserOutputDto.class)).toList();
     }
 
     @Override
@@ -80,7 +81,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato.")).setDeleted(true);
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Utente non trovato."));
+        user.setDeleted(true);
+        userRepository.save(user);
     }
 
     @Override

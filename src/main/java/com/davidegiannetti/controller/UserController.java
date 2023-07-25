@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Set<UserOutputDto>> getAll(){
+    public ResponseEntity<List<UserOutputDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
 
@@ -34,12 +35,12 @@ public class UserController {
         return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
     }
 
-    @PutMapping("/ban/{id}")
+    @PostMapping("/ban/{id}")
     public ResponseEntity<Void> ban(@PathVariable Long id){
         userService.ban(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @PutMapping("/unban/{id}")
+    @PostMapping("/unban/{id}")
     public ResponseEntity<Void> unban(@PathVariable Long id){
         userService.unban(id);
         return new ResponseEntity<>(HttpStatus.OK);
