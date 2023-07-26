@@ -2,6 +2,7 @@ package com.davidegiannetti.service.impl;
 
 import com.davidegiannetti.dto.post.OutputPostDto;
 import com.davidegiannetti.dto.post.RegistationPostDto;
+import com.davidegiannetti.dto.vote.OutputVoteDto;
 import com.davidegiannetti.entity.Category;
 import com.davidegiannetti.entity.Post;
 import com.davidegiannetti.entity.State;
@@ -79,6 +80,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(Long id) {
         postRepository.deleteById(id);
+    }
+
+    @Override
+    public OutputVoteDto voted(Long idPost, Long idUser) {
+        return null;
     }
 
 }

@@ -9,5 +9,6 @@ public interface VoteService {
 
     OutputVoteDto vote(InputVoteDto inputVoteDto);
     void delete(Long idPost);
-
+    OutputVoteDto voted(Long idPost);
+    OutputVoteDto update(InputVoteDto inputVoteDto);
 }

@@ -1,5 +1,6 @@
 package com.davidegiannetti.dto.comment;
 
+import com.davidegiannetti.dto.user.UserOutputDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,6 @@ public class OutputCommentDto {
 
     private Long id;
     private String content;
+    private UserOutputDto user;
 
 }

@@ -18,8 +18,7 @@ public class PrincipalUtil {
 
     public User getUserByPrincipal(){
         log.info((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return userRepository.findByEmail((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).get();
-//.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "devi autenticarti per accedere a questo servizio.")
+        return userRepository.findByEmail((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "devi autenticarti per accedere a questo servizio."));
     }
 
 }

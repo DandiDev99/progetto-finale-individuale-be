@@ -6,6 +6,7 @@ import com.davidegiannetti.entity.Post;
 import com.davidegiannetti.entity.User;
 import com.davidegiannetti.entity.Vote;
 import com.davidegiannetti.repository.PostRepository;
+import com.davidegiannetti.repository.UserRepository;
 import com.davidegiannetti.repository.VoteRepository;
 import com.davidegiannetti.service.VoteService;
 import com.davidegiannetti.util.PrincipalUtil;
@@ -42,8 +43,24 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public void delete(Long idPost) {
         User user = principal.getUserByPrincipal();
-        Post post = postRepository.findById(idPost).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trovato."));
+        Post post = postRepository.findById(idPost).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Post non trovato."));
         voteRepository.delete(voteRepository.findByUserAndPost(user,post).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Non trovo il voto da eliminare.")));
+    }
+
+    @Override
+    public OutputVoteDto voted(Long idPost) {
+        User user = principal.getUserByPrincipal();
+        Post post = postRepository.findById(idPost).orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Post non trovato."));
+        return modelMapper.map(voteRepository.findByUserAndPost(user,post).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voto non trovato.")), OutputVoteDto.class);
+    }
+
+    @Override
+    public OutputVoteDto update(InputVoteDto inputVoteDto) {
+        User user = principal.getUserByPrincipal();
+        Post post = postRepository.findById(inputVoteDto.getIdPost()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post non trovato."));
+        Vote vote = voteRepository.findByUserAndPost(user,post).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Voto non trovato."));
+        vote.setLiked(inputVoteDto.isLike());
+        return modelMapper.map(voteRepository.save(vote) , OutputVoteDto.class);
     }
 
 }

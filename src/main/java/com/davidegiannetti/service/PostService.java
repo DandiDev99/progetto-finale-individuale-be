@@ -2,6 +2,7 @@ package com.davidegiannetti.service;
 
 import com.davidegiannetti.dto.post.OutputPostDto;
 import com.davidegiannetti.dto.post.RegistationPostDto;
+import com.davidegiannetti.dto.vote.OutputVoteDto;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public interface PostService {
     OutputPostDto approve(Long id);
     OutputPostDto disapprove(Long id);
     void delete(Long id);
-
+    OutputVoteDto voted(Long idPost , Long idUser);
 }
