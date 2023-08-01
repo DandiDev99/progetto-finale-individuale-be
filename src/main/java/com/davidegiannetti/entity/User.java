@@ -51,7 +51,6 @@ public class User {
     @CreatedDate
     @Column(nullable = false)
     private LocalDate creationDate;
-    @LastModifiedDate
     private LocalDateTime lastAccess;
 
     public User(String firstName, String lastName, String username, String email, String password, Set<Role> roles) {

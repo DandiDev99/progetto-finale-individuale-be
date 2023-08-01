@@ -1,11 +1,14 @@
 package com.davidegiannetti.audit;
 
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UserAuditListner {
 
@@ -13,9 +16,24 @@ public class UserAuditListner {
     public void prePersist(Object entity) throws Exception{
         Class<?> cls = entity.getClass();
         for (Field field : cls.getDeclaredFields()){
-            Method setter = getSetter(field);
-            if(field.getAnnotation(CreatedDate.class)!=null){
+            if(field.getAnnotation(CreatedDate.class)!=null) {
+                Method setter = getSetter(field);
                 setter.invoke(entity, LocalDate.now());
+            }
+            if(field.getAnnotation(LastModifiedDate.class)!=null){
+                Method setter = getSetter(field);
+                setter.invoke(entity, LocalDateTime.now());
+            }
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate(Object entity) throws Exception{
+        Class<?> clazz = entity.getClass();
+        for (Field field : clazz.getDeclaredFields()){
+            if(field.getAnnotation(LastModifiedDate.class)!=null){
+                Method setter = getSetter(field);
+                setter.invoke(entity, LocalDateTime.now());
             }
         }
     }
