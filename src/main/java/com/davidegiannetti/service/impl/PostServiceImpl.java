@@ -3,14 +3,8 @@ package com.davidegiannetti.service.impl;
 import com.davidegiannetti.dto.post.OutputPostDto;
 import com.davidegiannetti.dto.post.RegistationPostDto;
 import com.davidegiannetti.dto.vote.OutputVoteDto;
-import com.davidegiannetti.entity.Category;
-import com.davidegiannetti.entity.Post;
-import com.davidegiannetti.entity.State;
-import com.davidegiannetti.entity.Tag;
-import com.davidegiannetti.repository.CategoryRepository;
-import com.davidegiannetti.repository.PostRepository;
-import com.davidegiannetti.repository.StateRepository;
-import com.davidegiannetti.repository.TagRepository;
+import com.davidegiannetti.entity.*;
+import com.davidegiannetti.repository.*;
 import com.davidegiannetti.service.PostService;
 import com.davidegiannetti.util.PrincipalUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -33,13 +26,22 @@ public class PostServiceImpl implements PostService {
     private final StateRepository stateRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
+    private final ValidatorRepository validatorRepository;
 
     @Override
     public OutputPostDto create(RegistationPostDto registationPostDto) {
         Post post = modelMapper.map(registationPostDto, Post.class);
-        //cerco i tag per nome se non ci sono li creo e li aggiungo
+        Validator v = validatorRepository.findByFieldName("titolo").orElseGet(()->null);
+        if(v!=null){
+            if(v.getMin()!=null && v.getMin()>post.getTitle().length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il titolo del tuo post deve contenere almeno "+v.getMin()+" caratteri!");
+            }
+            if(v.getMax()!=null && v.getMax()<post.getTitle().length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il titolo del tuo post deve contenere al massimo "+v.getMin()+" caratteri!");
+            }
+        }
         post.setCategory(categoryRepository.findByName(post.getCategory().getName()).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Categoria non valida")));
-
+        //cerco i tag per nome se non ci sono li creo e li aggiungo
         post.setTags(registationPostDto.getTags().stream().map( tagName -> tagRepository.findByName(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName)))).collect(Collectors.toSet()));
         post.setAuthor(principalUtil.getUserByPrincipal());
         post.setState(stateRepository.findByState("APPROVAZIONE").orElseGet(() -> stateRepository.save(new State("APPROVAZIONE"))));
