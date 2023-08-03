@@ -6,6 +6,7 @@ import com.davidegiannetti.dto.user.RegistrationUserDto;
 import com.davidegiannetti.dto.user.UserOutputDto;
 import com.davidegiannetti.entity.Role;
 import com.davidegiannetti.entity.User;
+import com.davidegiannetti.entity.Validator;
 import com.davidegiannetti.repository.RoleRepository;
 import com.davidegiannetti.repository.UserRepository;
 import com.davidegiannetti.repository.ValidatorRepository;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -49,14 +49,41 @@ public class UserServiceImpl implements UserService {
         userRepository.findByEmail(registrationUserDto.getEmail()).ifPresent(user -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email già utilizzata.");
         });
-        //validazione dinamica
-//        Validator v = validatorRepository.findByFieldName("password").orElseThrow(()->new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Errore Lato Server"));
-        //TODO: controllare i campi
-//        if(v.getMin()!=null && title<v.getMin() ){
-//
-//        }
-        //altro
+
         User user = modelMapper.map(registrationUserDto, User.class);
+
+        //validazione campo password
+        Validator v = validatorRepository.findByFieldName("password").orElseGet(()->null);
+        if(v != null){
+            String pass = user.getPassword();
+            if (v.getMin()!=null && v.getMin()>pass.length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere almeno "+v.getMin()+" caratteri!");
+            }
+            if (v.getMax()!=null && v.getMax()<pass.length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere al massimo "+v.getMax()+" caratteri!");
+            }
+            if (v.getSpecialChar()){
+                if(!pass.matches(".*[^a-zA-Z0-9].*")) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere almeno un carattere speciale!");
+                }
+            }
+            if(v.getUpperCase()){
+                if(!pass.matches("[A-Z]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere almeno un carattere MAIUSCOLO!");
+                }
+            }
+            if(v.getLowerCase()){
+                if(!pass.matches("[a-z]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere almeno un carattere minuscolo!");
+                }
+            }
+            if(v.getNumber()){
+                if(!pass.matches("[0-9]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La password deve avere almeno un numero!");
+                }
+            }
+        }
+
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String password = generaPassword();
         user.setPassword(bCryptPasswordEncoder.encode(password));
