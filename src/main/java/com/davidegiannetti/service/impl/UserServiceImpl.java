@@ -84,6 +84,38 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        //validazione campo username
+        v = validatorRepository.findByFieldName("username").orElseGet(()->null);
+        if(v != null){
+            String username = user.getUsername();
+            if (v.getMin()!=null && v.getMin()>username.length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere almeno "+v.getMin()+" caratteri!");
+            }
+            if (v.getMax()!=null && v.getMax()<username.length()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere al massimo "+v.getMax()+" caratteri!");
+            }
+            if (v.getSpecialChar()){
+                if(!username.matches(".*[^a-zA-Z0-9].*")) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere almeno un carattere speciale!");
+                }
+            }
+            if(v.getUpperCase()){
+                if(!username.matches("[A-Z]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere almeno un carattere MAIUSCOLO!");
+                }
+            }
+            if(v.getLowerCase()){
+                if(!username.matches("[a-z]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere almeno un carattere minuscolo!");
+                }
+            }
+            if(v.getNumber()){
+                if(!username.matches("[0-9]")){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "L'username deve avere almeno un numero!");
+                }
+            }
+        }
+
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String password = generaPassword();
         user.setPassword(bCryptPasswordEncoder.encode(password));
